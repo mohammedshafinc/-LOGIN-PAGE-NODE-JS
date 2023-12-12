@@ -1,0 +1,51 @@
+<!-- views/signup.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Signup Page</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                text-align: center;
+                margin: 50px;
+            }
+            form {
+                display: inline-block;
+                text-align: left;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Signup Page</h1>
+        <form method="post" action="/signup">
+            <label for="email">Email:</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                onblur="emailval()"
+                required
+            />
+            <p style="color: red" id="emailerr"></p>
+
+            <br /><br />
+            <label for="password">Password:</label>
+            <input
+                type="password"
+                id="passign"
+                name="password"
+                required
+                onblur="validation()"
+            />
+            <p style="color: red" id="passerr"></p>
+            <br /><br />
+
+            <br />
+            <button type="submit">Sign up</button>
+        </form>
+        <p>Already have an account? <a href="/login">Login</a></p>
+        <script src="../validation/validation.js"></script>
+    </body>
+</html>
