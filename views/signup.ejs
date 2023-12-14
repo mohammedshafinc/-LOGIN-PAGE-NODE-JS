@@ -5,20 +5,11 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Signup Page</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                text-align: center;
-                margin: 50px;
-            }
-            form {
-                display: inline-block;
-                text-align: left;
-            }
-        </style>
+        <!-- <link rel="stylesheet" href="../public/styles/style.css"> -->
+        <link rel="stylesheet" href="/signupstyle.css" />
     </head>
     <body>
-        <h1>Signup Page</h1>
+        <h1 class="hello">Signup</h1>
         <form method="post" action="/signup">
             <label for="email">Email:</label>
             <input
@@ -28,7 +19,8 @@
                 onblur="emailval()"
                 required
             />
-            <p style="color: red" id="emailerr"></p>
+            <p id="emailerr"></p>
+            <p id="sameemail"><%= error %></p>
 
             <br /><br />
             <label for="password">Password:</label>
@@ -39,7 +31,7 @@
                 required
                 onblur="validation()"
             />
-            <p style="color: red" id="passerr"></p>
+            <p id="passerr"></p>
             <br /><br />
 
             <br />

@@ -1,40 +1,75 @@
-const express = require("express");
-const router = express.Router();
 const fs = require("fs");
 const path = require("path");
 
-const app = express();
-
 const pathfile = path.join(__dirname, "../models/user.json");
 
-router.get("/", (req, res) => {
-    res.render("signup");
-});
+const existingUser = JSON.parse(fs.readFileSync(pathfile));
 
-router.post("/signup", (req, res) => {
-    const { email, password } = req.body;
+let errors = "";
 
-    const existingUser = JSON.parse(fs.readFileSync(pathfile));
-    // console.log(existingUser);
+module.exports = {
+    mainRouter: (req, res) => {
+        if (req.session.email) {
+            res.render("login");
+        } else {
+            res.render("signup", { error: errors });
+            errors = "";
+        }
+    },
 
-    const userExists = existingUser.find((user) => user.email === email);
-
-    if (userExists) {
-        res.send("user already exist");
-    } else {
-        existingUser.push({ email, password });
-
-        fs.writeFileSync(pathfile, JSON.stringify(existingUser));
-
-        res.redirect("login");
-    }
-    // console.log(req.body);
-});
-router.get("/login", (req, res) => {
-    res.render("login");
-});
-// router.get("/home", (req, res) => {
-//     res.render("home");
-// });
-
-module.exports = router;
+    getLogin: (req, res) => {
+        if (!req.session.email) {
+            res.render("login", { error: errors || "" });
+        } else {
+            res.render("home");
+        }
+    },
+    postSignup: (req, res) => {
+        const { email, password } = req.body;
+        const userExists = existingUser.find((user) => user.email === email);
+        if (userExists) {
+            errors = `An account with ${email} already exist`;
+            res.redirect("/");
+            // res.redirect("login");
+        } else {
+            existingUser.push({ email, password });
+            fs.writeFile(pathfile, JSON.stringify(existingUser), (err) => {
+                if (err) {
+                    console.error("Error writing to file:", err);
+                } else {
+                    req.session.email = "shafin";
+                    // console.log("File written successfully. /login");
+                    res.redirect("login");
+                }
+            });
+        }
+    },
+    postLogin: (req, res) => {
+        const { email, password } = req.body;
+        const signedUser = existingUser.find((loguser) => {
+            return loguser.email === email && loguser.password == password;
+            // console.log("sigssned", existingUser);
+        });
+        // console.log("signed", signedUser);
+        // console.log(signedUser);
+        if (signedUser) {
+            req.session.email = "shafin";
+            res.redirect("home");
+        } else {
+            errors = "Email or Pasword is incorrect";
+            res.redirect("login");
+        }
+    },
+    getHome: (req, res) => {
+        if (req.session.email) {
+            res.render("home");
+        } else {
+            res.redirect("/");
+        }
+    },
+    getLogout: (req, res) => {
+        req.session.destroy(() => {
+            res.redirect("login");
+        });
+    },
+};
