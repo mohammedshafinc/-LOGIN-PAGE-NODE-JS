@@ -10,18 +10,20 @@ let errors = "";
 module.exports = {
     mainRouter: (req, res) => {
         if (req.session.email) {
-            res.render("login");
+            res.redirect("/login");
         } else {
-            res.render("signup", { error: errors });
+            res.redirect("/signup");
             errors = "";
         }
     },
-
+    getSignup: (req, res) => {
+        res.render("signup", { error: errors });
+    },
     getLogin: (req, res) => {
         if (!req.session.email) {
-            res.render("login", { error: errors || "" });
+            res.render("login", { error: errors });
         } else {
-            res.render("home");
+            res.redirect("/home");
         }
     },
     postSignup: (req, res) => {
@@ -39,7 +41,7 @@ module.exports = {
                 } else {
                     req.session.email = "shafin";
                     // console.log("File written successfully. /login");
-                    res.redirect("login");
+                    res.redirect("/login");
                 }
             });
         }
@@ -48,16 +50,22 @@ module.exports = {
         const { email, password } = req.body;
         const signedUser = existingUser.find((loguser) => {
             return loguser.email === email && loguser.password == password;
-            // console.log("sigssned", existingUser);
         });
+        const ifuser = existingUser.find((e) => {
+            return e.email === email;
+        });
+
         // console.log("signed", signedUser);
         // console.log(signedUser);
         if (signedUser) {
             req.session.email = "shafin";
-            res.redirect("home");
+            res.redirect("/home");
+        } else if (!ifuser) {
+            errors = "myran illa";
+            res.redirect("/login");
         } else {
             errors = "Email or Pasword is incorrect";
-            res.redirect("login");
+            res.redirect("/login");
         }
     },
     getHome: (req, res) => {
@@ -69,7 +77,7 @@ module.exports = {
     },
     getLogout: (req, res) => {
         req.session.destroy(() => {
-            res.redirect("login");
+            res.redirect("/login");
         });
     },
 };
